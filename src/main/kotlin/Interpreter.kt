@@ -13,8 +13,7 @@ fun parseHex(str: String): Int {
 fun showPattern(num: Int): String {
     return num
         .toString(radix = 2)
-        .map { it.toString().toInt() }
-        .map { if (it == 0) '○' else '●' }
+        .map { if (it == '0') '○' else '●' }
         .joinToString("")
 }
 
