@@ -7,7 +7,7 @@ fun isHex(str: String): Boolean {
 }
 
 fun parseHex(str: String): Int {
-    return Integer.parseInt(str.replace("0x", ""), 16)
+    return str.replace("0x", "").toInt(radix = 16)
 }
 
 class Interpreter(private val p: Processor) {
