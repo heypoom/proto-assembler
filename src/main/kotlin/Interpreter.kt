@@ -14,7 +14,9 @@ fun showPattern(num: Int): String {
     return num
         .toString(radix = 2)
         .map { if (it == '0') '○' else '●' }
+        .mapIndexed { i, x -> if (i % 2 == 0) x else "$x "}
         .joinToString("")
+        .trim()
 }
 
 private val registers = enumValues<Register>().map { it.name.toLowerCase() }
