@@ -1,7 +1,7 @@
 import java.util.*
 
 enum class Register {
-    PC, // Instruction Pointer aka Program Counter
+    EIP, // Instruction Pointer aka Program Counter
     SP, // Stack Pointer
     EAX, // Accumulator Counter
     EBX, // Base Counter
@@ -24,7 +24,7 @@ class Processor {
     }
 
     fun jmp(address: Int) {
-        mov(Register.PC, address)
+        mov(Register.EIP, address)
     }
 
     fun push(value: Int) {

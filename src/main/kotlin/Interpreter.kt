@@ -2,6 +2,14 @@ fun isNumber(str: String): Boolean {
     return str.matches(Regex("^\\d+$"))
 }
 
+fun isHex(str: String): Boolean {
+    return str.matches(Regex("^0x[0-9A-Fa-f]+$"))
+}
+
+fun parseHex(str: String): Int {
+    return Integer.parseInt(str.replace("0x", ""), 16)
+}
+
 class Interpreter(private val p: Processor) {
     private val registers = enumValues<Register>().map { it.name.toLowerCase() }
 
@@ -15,6 +23,7 @@ class Interpreter(private val p: Processor) {
         val reg = getReg(dst)
 
         if (reg != null) return p.get(reg)
+        if (isHex(dst)) return parseHex(dst)
         if (isNumber(dst)) return dst.toInt()
 
         return null
@@ -76,7 +85,7 @@ fun main() {
     i.runLines("""
         mov eax, 0
         mov ebx, 0
-        mov pc, 0
+        mov eip, 0
     """)
 
     i.loop()
