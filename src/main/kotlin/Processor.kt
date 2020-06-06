@@ -2,7 +2,7 @@ import java.util.*
 
 enum class Register {
     EIP, // Instruction Pointer aka Program Counter
-    SP, // Stack Pointer
+    ESP, // Stack Pointer
     EAX, // Accumulator Counter
     EBX, // Base Counter
 }
