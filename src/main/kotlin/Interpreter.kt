@@ -10,6 +10,14 @@ fun parseHex(str: String): Int {
     return str.replace("0x", "").toInt(radix = 16)
 }
 
+fun showPattern(num: Int): String {
+    return num
+        .toString(radix = 2)
+        .map { it.toString().toInt() }
+        .map { if (it == 0) '○' else '●' }
+        .joinToString("")
+}
+
 private val registers = enumValues<Register>().map { it.name.toLowerCase() }
 private val ops = enumValues<Op>().map { it.name.toLowerCase() }
 
@@ -55,6 +63,7 @@ class Interpreter(private val p: Processor) {
             "incr" -> p.incr(dstReg)
             "decr" -> p.decr(dstReg)
             "pop" -> p.pop(dstReg)
+            "print" -> print(dstReg, dstStr)
         }
 
         if (r.size < 3) return
@@ -66,6 +75,11 @@ class Interpreter(private val p: Processor) {
             "add" -> p.add(dstReg, srcReg)
             "sub" -> p.sub(dstReg, srcReg)
         }
+    }
+
+    private fun print(reg: Register, dstStr: String) {
+        val v = p.get(reg)
+        println("$dstStr = $v (${showPattern(v)})")
     }
 
     fun runLines(lines: String) {
