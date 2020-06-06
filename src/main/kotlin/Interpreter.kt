@@ -10,15 +10,22 @@ fun parseHex(str: String): Int {
     return str.replace("0x", "").toInt(radix = 16)
 }
 
+private val registers = enumValues<Register>().map { it.name.toLowerCase() }
+private val ops = enumValues<Op>().map { it.name.toLowerCase() }
+
+private fun getReg(reg: String): Register? {
+    if (reg !in registers) return null
+
+    return enumValueOf<Register>(reg.toUpperCase())
+}
+
+private fun getOp(op: String): Op? {
+    if (op !in ops) return null
+
+    return enumValueOf<Op>(op.toUpperCase())
+}
+
 class Interpreter(private val p: Processor) {
-    private val registers = enumValues<Register>().map { it.name.toLowerCase() }
-
-    private fun getReg(reg: String): Register? {
-        if (reg !in registers) return null
-
-        return enumValueOf<Register>(reg.toUpperCase())
-    }
-
     private fun getValue(dst: String): Int? {
         val reg = getReg(dst)
 

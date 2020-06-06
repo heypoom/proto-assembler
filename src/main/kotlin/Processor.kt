@@ -7,6 +7,18 @@ enum class Register {
     EBX, // Base Counter
 }
 
+enum class Op {
+    NOP, // Do nothing
+    MOV, // Move
+    JMP, // Jump
+    INCR, // Increment
+    DECR, // Decrement
+    PUSH, // Push to Stack
+    POP, // Pop from Stack
+    ADD, // Add
+    SUB, // Subtract
+}
+
 class Processor {
     val registers = EnumMap<Register, Int>(Register::class.java)
     val memory = HashMap<Int, Int>()
@@ -28,12 +40,12 @@ class Processor {
     }
 
     fun push(value: Int) {
-        val sp = get(Register.SP)
+        val sp = get(Register.ESP)
         memory[sp] = value
     }
 
     fun pop(reg: Register) {
-        val sp = get(Register.SP)
+        val sp = get(Register.ESP)
         mov(reg, memory[sp] ?: 0)
     }
 
