@@ -55,6 +55,7 @@ class Interpreter(private val p: Processor) {
         when (op) {
             "jmp" -> p.jmp(value)
             "push" -> p.push(value)
+            "print" -> print(value, dstStr)
         }
 
         val dstReg = getReg(dstStr) ?: return
@@ -63,7 +64,6 @@ class Interpreter(private val p: Processor) {
             "incr" -> p.incr(dstReg)
             "decr" -> p.decr(dstReg)
             "pop" -> p.pop(dstReg)
-            "print" -> print(dstReg, dstStr)
         }
 
         if (r.size < 3) return
@@ -77,9 +77,8 @@ class Interpreter(private val p: Processor) {
         }
     }
 
-    private fun print(reg: Register, dstStr: String) {
-        val v = p.get(reg)
-        println("$dstStr = $v (${showPattern(v)})")
+    private fun print(value: Int, dstStr: String) {
+        println("$dstStr = $value (${showPattern(value)})")
     }
 
     fun runLines(lines: String) {
