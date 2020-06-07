@@ -53,16 +53,15 @@ class Interpreter(private val p: Processor) {
         val opKey = r[0]
         if (opKey == "program") println(program)
 
-        val op = getOp(opKey) ?: return
-        program.add(line)
-
         if (r.size < 2) return
+
         val dstKey = r[1]
+        if (opKey == "print") show(dstKey)
+
+        val op = getOp(opKey) ?: return
 
         val value = getValue(dstKey) ?: return
         execWithValue(op, value)
-
-        if (opKey == "print") print(value, dstKey)
 
         val register = getReg(dstKey) ?: return
         execWithRegister(op, register)
@@ -70,6 +69,8 @@ class Interpreter(private val p: Processor) {
         if (r.size < 3) return
         val srcValue = getValue(r[2]) ?: return
         execWithRegisterAndValue(op, register, srcValue)
+
+        program.add(line)
     }
 
     private fun execWithValue(op: Op, value: Int) {
@@ -105,13 +106,12 @@ class Interpreter(private val p: Processor) {
         fn(reg, value)
     }
 
-    private fun print(value: Int, dstKey: String) {
-        println("$dstKey = $value (${showPattern(value)})")
+    private fun show(key: String) {
+        val value = getValue(key) ?: return
+        println("$key = $value (${showPattern(value)})")
     }
 
-    fun runLines(lines: String) {
-        lines.trimIndent().split("\n").forEach { run(it) }
-    }
+    fun runLines(lines: String) = lines.trimIndent().split("\n").forEach { run(it) }
 
     fun loop() {
         while (true) {
