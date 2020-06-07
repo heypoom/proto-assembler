@@ -48,54 +48,57 @@ class Interpreter(private val p: Processor) {
     }
 
     fun run(line: String) {
-        val r = line.trim().replace(",", "").split(" ")
-        if (r.size < 2) return
+        val r = line.trim().replace(",", "").split(" ").map { it.toLowerCase() }
 
-        val (op, dstKey) = r.map { it.toLowerCase() }
+        val opKey = r[0]
+        if (opKey == "program") println(program)
+
+        val op = getOp(opKey) ?: return
+        program.add(line)
+
+        if (r.size < 2) return
+        val dstKey = r[1]
+
         val value = getValue(dstKey) ?: return
         execWithValue(op, value)
 
-        when (op) {
-            "print" -> return print(value, dstKey)
-            "program" -> return println(program)
-        }
+        if (opKey == "print") print(value, dstKey)
 
         val register = getReg(dstKey) ?: return
         execWithRegister(op, register)
 
         if (r.size < 3) return
-        val srcKey = r[2].toLowerCase()
-        val srcValue = getValue(srcKey) ?: return
+        val srcValue = getValue(r[2]) ?: return
         execWithRegisterAndValue(op, register, srcValue)
     }
 
-    private fun execWithValue(op: String, value: Int) {
+    private fun execWithValue(op: Op, value: Int) {
         val fn: (Int) -> Unit = when (op) {
-            "jmp" -> p::jmp
-            "push" -> p::push
+            Op.JMP -> p::jmp
+            Op.PUSH -> p::push
             else -> return
         }
 
         fn(value)
     }
 
-    private fun execWithRegister(op: String, reg: Register) {
+    private fun execWithRegister(op: Op, reg: Register) {
         val fn: (Register) -> Unit = when (op) {
-            "incr" -> p::incr
-            "decr" -> p::decr
-            "pop" -> p::pop
+            Op.INCR -> p::incr
+            Op.DECR -> p::decr
+            Op.POP -> p::pop
             else -> return
         }
 
         fn(reg)
     }
 
-    private fun execWithRegisterAndValue(op: String, reg: Register, value: Int) {
+    private fun execWithRegisterAndValue(op: Op, reg: Register, value: Int) {
         val fn: (Register, Int) -> Unit = when (op) {
-            "mov" -> p::mov
-            "add" -> p::add
-            "sub" -> p::sub
-            "xor" -> p::xor
+            Op.MOV -> p::mov
+            Op.ADD -> p::add
+            Op.SUB -> p::sub
+            Op.XOR -> p::xor
             else -> return
         }
 

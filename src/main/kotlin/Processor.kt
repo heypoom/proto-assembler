@@ -17,6 +17,7 @@ enum class Op {
     POP, // Pop from Stack
     ADD, // Add
     SUB, // Subtract
+    XOR, // Exclusive OR
 }
 
 class Processor {
