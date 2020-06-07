@@ -36,8 +36,6 @@ class Processor {
         registers[dst] = value
     }
 
-    fun mov(dst: Register, src: Register) = mov(dst, get(src))
-
     fun jmp(address: Int) = mov(Register.EIP, address)
 
     fun push(value: Int) = memset(get(Register.ESP), value)
