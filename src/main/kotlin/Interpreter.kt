@@ -47,7 +47,6 @@ class Interpreter(private val p: Processor) {
 
     fun run(line: String) {
         val r = line.trim().replace(",", "").split(" ")
-
         if (r.size < 2) return
 
         val (op, dstStr) = r.map { it.toLowerCase() }
@@ -71,11 +70,15 @@ class Interpreter(private val p: Processor) {
         val srcStr = r[2].toLowerCase()
         val srcReg = getValue(srcStr) ?: return
 
-        when (op) {
-            "mov" -> p.mov(dstReg, srcReg)
-            "add" -> p.add(dstReg, srcReg)
-            "sub" -> p.sub(dstReg, srcReg)
+        val fn: (Register, Int) -> Unit = when (op) {
+            "mov" -> p::mov
+            "add" -> p::add
+            "sub" -> p::sub
+            "xor" -> p::xor
+            else -> {_, _ ->}
         }
+
+        fn(dstReg, srcReg)
     }
 
     private fun print(value: Int, dstStr: String) {

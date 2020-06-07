@@ -27,6 +27,8 @@ class Processor {
         return registers[reg] ?: 0
     }
 
+    fun nop() {}
+
     fun mov(dst: Register, value: Int) {
         registers[dst] = value
     }
@@ -64,10 +66,8 @@ class Processor {
     fun sub(reg: Register, value: Int) {
         add(reg, -value)
     }
+
+    fun xor(reg: Register, value: Int) {
+        mov(reg, get(reg).xor(value))
+    }
 }
-
-fun isWord(str: String): Boolean {
-    return Regex("\\w+").containsMatchIn(str)
-}
-
-
