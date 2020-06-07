@@ -35,6 +35,8 @@ private fun getOp(op: String): Op? {
 }
 
 class Interpreter(private val p: Processor) {
+    private val program = mutableListOf<String>()
+
     private fun getValue(dst: String): Int? {
         val reg = getReg(dst)
 
@@ -49,40 +51,59 @@ class Interpreter(private val p: Processor) {
         val r = line.trim().replace(",", "").split(" ")
         if (r.size < 2) return
 
-        val (op, dstStr) = r.map { it.toLowerCase() }
-        val value = getValue(dstStr) ?: return
+        val (op, dstKey) = r.map { it.toLowerCase() }
+        val value = getValue(dstKey) ?: return
+        execWithValue(op, value)
 
         when (op) {
-            "jmp" -> p.jmp(value)
-            "push" -> p.push(value)
-            "print" -> print(value, dstStr)
+            "print" -> return print(value, dstKey)
+            "program" -> return println(program)
         }
 
-        val dstReg = getReg(dstStr) ?: return
-
-        when (op) {
-            "incr" -> p.incr(dstReg)
-            "decr" -> p.decr(dstReg)
-            "pop" -> p.pop(dstReg)
-        }
+        val register = getReg(dstKey) ?: return
+        execWithRegister(op, register)
 
         if (r.size < 3) return
-        val srcStr = r[2].toLowerCase()
-        val srcReg = getValue(srcStr) ?: return
+        val srcKey = r[2].toLowerCase()
+        val srcValue = getValue(srcKey) ?: return
+        execWithRegisterAndValue(op, register, srcValue)
+    }
 
+    private fun execWithValue(op: String, value: Int) {
+        val fn: (Int) -> Unit = when (op) {
+            "jmp" -> p::jmp
+            "push" -> p::push
+            else -> return
+        }
+
+        fn(value)
+    }
+
+    private fun execWithRegister(op: String, reg: Register) {
+        val fn: (Register) -> Unit = when (op) {
+            "incr" -> p::incr
+            "decr" -> p::decr
+            "pop" -> p::pop
+            else -> return
+        }
+
+        fn(reg)
+    }
+
+    private fun execWithRegisterAndValue(op: String, reg: Register, value: Int) {
         val fn: (Register, Int) -> Unit = when (op) {
             "mov" -> p::mov
             "add" -> p::add
             "sub" -> p::sub
             "xor" -> p::xor
-            else -> {_, _ ->}
+            else -> return
         }
 
-        fn(dstReg, srcReg)
+        fn(reg, value)
     }
 
-    private fun print(value: Int, dstStr: String) {
-        println("$dstStr = $value (${showPattern(value)})")
+    private fun print(value: Int, dstKey: String) {
+        println("$dstKey = $value (${showPattern(value)})")
     }
 
     fun runLines(lines: String) {
@@ -106,10 +127,10 @@ fun main() {
     val p = Processor()
     val i = Interpreter(p)
 
+    p.mov(Register.EIP, 0)
+
     i.runLines("""
-        mov eax, 0
-        mov ebx, 0
-        mov eip, 0
+        mov eax, 20
     """)
 
     i.loop()

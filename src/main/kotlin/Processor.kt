@@ -27,47 +27,26 @@ class Processor {
         return registers[reg] ?: 0
     }
 
-    fun nop() {}
+    private fun memset(address: Int, value: Int) {
+        memory[address] = value
+    }
 
     fun mov(dst: Register, value: Int) {
         registers[dst] = value
     }
 
-    fun mov(dst: Register, src: Register) {
-        mov(dst, get(src))
-    }
+    fun mov(dst: Register, src: Register) = mov(dst, get(src))
 
-    fun jmp(address: Int) {
-        mov(Register.EIP, address)
-    }
+    fun jmp(address: Int) = mov(Register.EIP, address)
 
-    fun push(value: Int) {
-        val sp = get(Register.ESP)
-        memory[sp] = value
-    }
+    fun push(value: Int) = memset(get(Register.ESP), value)
+    fun pop(reg: Register) = mov(reg, memory[get(Register.ESP)] ?: 0)
 
-    fun pop(reg: Register) {
-        val sp = get(Register.ESP)
-        mov(reg, memory[sp] ?: 0)
-    }
+    fun incr(reg: Register) = add(reg, 1)
+    fun decr(reg: Register) = sub(reg, 1)
 
-    fun incr(reg: Register) {
-        add(reg, 1)
-    }
+    fun add(reg: Register, value: Int) = mov(reg, get(reg) + value)
+    fun sub(reg: Register, value: Int) = add(reg, -value)
 
-    fun decr(reg: Register) {
-        sub(reg, 1)
-    }
-
-    fun add(reg: Register, value: Int) {
-        mov(reg, get(reg) + value)
-    }
-
-    fun sub(reg: Register, value: Int) {
-        add(reg, -value)
-    }
-
-    fun xor(reg: Register, value: Int) {
-        mov(reg, get(reg).xor(value))
-    }
+    fun xor(reg: Register, value: Int) = mov(reg, get(reg).xor(value))
 }
